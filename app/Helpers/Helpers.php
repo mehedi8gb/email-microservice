@@ -99,7 +99,7 @@ function processNestedArray(array $existingArray, array $payloadArray): array
  * @param int $statusCode
  * @return JsonResponse
  */
-function sendErrorResponse( NotFoundHttpException|ModelNotFoundException|Exception|string $e, int $statusCode,): JsonResponse
+function sendErrorResponse( NotFoundHttpException|ModelNotFoundException|Exception|string $e, int $statusCode = 0): JsonResponse
 {
     if ($e instanceof ModelNotFoundException) {
         return response()->json([
@@ -117,7 +117,7 @@ function sendErrorResponse( NotFoundHttpException|ModelNotFoundException|Excepti
     return response()->json([
         'success' => false,
         'message' => $e instanceof Exception ? $e->getMessage() : $e,
-    ], $statusCode);
+    ], $statusCode ?: $e->getCode());
 }
 /**
  * Format success response.

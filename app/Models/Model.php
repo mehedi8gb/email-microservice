@@ -30,6 +30,7 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Model get()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Model first()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Model findOrFail($id)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Model updateOrCreate($attributes, $values = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Model find($id)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Model exists()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Model latest()

@@ -85,9 +85,4 @@ class User extends Authenticatable implements JWTSubject
             ? url('storage/' . $this->profile_photo_path)
             : null;
     }
-
-    public function referrals(): BelongsToMany
-    {
-        return $this->belongsToMany(Referral::class, 'referral_user', 'user_id', 'referralId');
-    }
 }
