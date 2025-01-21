@@ -1,0 +1,762 @@
+openapi: 3.0.3
+info:
+  title: EmailMicroservice
+  description: ''
+  version: 1.0.0
+servers:
+  -
+    url: 'http://localhost'
+paths:
+  /api/v1/auth/register:
+    post:
+      summary: ''
+      operationId: postApiV1AuthRegister
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Endpoints
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: 'Must not be greater than 255 characters.'
+                  example: aug
+                  nullable: false
+                email:
+                  type: string
+                  description: 'Must be a valid email address. This field is required when <code>phone</code> is not present.'
+                  example: skshlerin@example.com
+                  nullable: true
+                phone:
+                  type: string
+                  description: 'This field is required when <code>email</code> is not present. Must not be greater than 15 characters.'
+                  example: bfdh
+                  nullable: true
+                password:
+                  type: string
+                  description: 'Must be at least 6 characters.'
+                  example: 'p0N4S]J:ClPl}'
+                  nullable: false
+                referralId:
+                  type: string
+                  description: ''
+                  example: voluptates
+                  nullable: false
+              required:
+                - name
+                - password
+                - referralId
+      security: []
+  /api/v1/auth/login:
+    post:
+      summary: 'Login a user and issue tokens'
+      operationId: loginAUserAndIssueTokens
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Endpoints
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: 'Must be a valid email address.'
+                  example: estella63@example.com
+                  nullable: false
+                password:
+                  type: string
+                  description: ''
+                  example: 'y=`IxyXRd1!pkM,O'
+                  nullable: false
+              required:
+                - email
+                - password
+      security: []
+  /api/v1/auth/forget:
+    post:
+      summary: 'Forgot Password (Generate OTP)'
+      operationId: forgotPasswordGenerateOTP
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Endpoints
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: 'Must be a valid email address. The <code>email</code> of an existing record in the users table.'
+                  example: josiah51@example.com
+                  nullable: false
+              required:
+                - email
+      security: []
+  /api/v1/auth/validate:
+    post:
+      summary: 'Validate OTP'
+      operationId: validateOTP
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Endpoints
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: 'Must be a valid email address. The <code>email</code> of an existing record in the users table.'
+                  example: veronica.simonis@example.com
+                  nullable: false
+                otp:
+                  type: string
+                  description: ''
+                  example: ex
+                  nullable: false
+              required:
+                - email
+                - otp
+      security: []
+  /api/v1/auth/reset:
+    post:
+      summary: 'Reset Password'
+      operationId: resetPassword
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Endpoints
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  type: string
+                  description: ''
+                  example: consequuntur
+                  nullable: false
+                email:
+                  type: string
+                  description: 'Must be a valid email address. The <code>email</code> of an existing record in the users table.'
+                  example: rhoda51@example.com
+                  nullable: false
+                newPassword:
+                  type: string
+                  description: 'Must be at least 6 characters.'
+                  example: itsykeqnbtrjweksylrglhvufipwiaelatektcvijxnjmbawwvafkrqoe
+                  nullable: false
+              required:
+                - token
+                - email
+                - newPassword
+      security: []
+  /api/v1/auth/refresh:
+    post:
+      summary: 'Refresh Token'
+      operationId: refreshToken
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Endpoints
+      security: []
+  /api/v1/auth/logout:
+    post:
+      summary: 'Logout and invalidate tokens'
+      operationId: logoutAndInvalidateTokens
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Endpoints
+      security: []
+  /api/v1/me:
+    get:
+      summary: 'Get the authenticated user'
+      operationId: getTheAuthenticatedUser
+      description: ''
+      parameters: []
+      responses:
+        401:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  error: 'Token not valid'
+                properties:
+                  error:
+                    type: string
+                    example: 'Token not valid'
+      tags:
+        - Endpoints
+      security: []
+  /api/v1/smtp:
+    post:
+      summary: ''
+      operationId: postApiV1Smtp
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Endpoints
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                company_id:
+                  type: integer
+                  description: 'The <code>id</code> of an existing record in the companies table.'
+                  example: 5
+                  nullable: false
+                host:
+                  type: string
+                  description: ''
+                  example: quaerat
+                  nullable: false
+                port:
+                  type: integer
+                  description: ''
+                  example: 5
+                  nullable: false
+                username:
+                  type: string
+                  description: ''
+                  example: voluptas
+                  nullable: false
+                password:
+                  type: string
+                  description: ''
+                  example: "LA%O'x[shP$C!c"
+                  nullable: false
+                encryption:
+                  type: string
+                  description: ''
+                  example: ssl
+                  nullable: false
+                  enum:
+                    - ssl
+                    - tls
+              required:
+                - company_id
+                - host
+                - port
+                - username
+                - password
+                - encryption
+      security: []
+  '/api/v1/smtp/{id}':
+    get:
+      summary: ''
+      operationId: getApiV1SmtpId
+      description: ''
+      parameters: []
+      responses:
+        401:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  error: 'Token not valid'
+                properties:
+                  error:
+                    type: string
+                    example: 'Token not valid'
+      tags:
+        - Endpoints
+      security: []
+    put:
+      summary: ''
+      operationId: putApiV1SmtpId
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Endpoints
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                host:
+                  type: string
+                  description: ''
+                  example: quasi
+                  nullable: false
+                port:
+                  type: integer
+                  description: ''
+                  example: 19
+                  nullable: false
+                username:
+                  type: string
+                  description: ''
+                  example: eos
+                  nullable: false
+                password:
+                  type: string
+                  description: ''
+                  example: GvnsZ)/56uW+0mj1DRH!
+                  nullable: false
+                encryption:
+                  type: string
+                  description: ''
+                  example: tls
+                  nullable: false
+                  enum:
+                    - ssl
+                    - tls
+      security: []
+    parameters:
+      -
+        in: path
+        name: id
+        description: 'The ID of the smtp.'
+        example: voluptatem
+        required: true
+        schema:
+          type: string
+  /api/v1/companies:
+    get:
+      summary: ''
+      operationId: getApiV1Companies
+      description: ''
+      parameters: []
+      responses:
+        401:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  error: 'Token not valid'
+                properties:
+                  error:
+                    type: string
+                    example: 'Token not valid'
+      tags:
+        - Endpoints
+      security: []
+    post:
+      summary: ''
+      operationId: postApiV1Companies
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Endpoints
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: 'Must not be greater than 255 characters.'
+                  example: xgnyvlnzmitulxxczxxaawep
+                  nullable: false
+                email:
+                  type: string
+                  description: 'Must be a valid email address.'
+                  example: michael.leannon@example.net
+                  nullable: false
+              required:
+                - name
+                - email
+      security: []
+  '/api/v1/companies/{id}':
+    get:
+      summary: ''
+      operationId: getApiV1CompaniesId
+      description: ''
+      parameters: []
+      responses:
+        401:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  error: 'Token not valid'
+                properties:
+                  error:
+                    type: string
+                    example: 'Token not valid'
+      tags:
+        - Endpoints
+      security: []
+    delete:
+      summary: ''
+      operationId: deleteApiV1CompaniesId
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Endpoints
+      security: []
+    parameters:
+      -
+        in: path
+        name: id
+        description: 'The ID of the company.'
+        example: 1
+        required: true
+        schema:
+          type: integer
+  /api/v1/send-email:
+    post:
+      summary: ''
+      operationId: postApiV1SendEmail
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Endpoints
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                company_id:
+                  type: integer
+                  description: 'The <code>id</code> of an existing record in the companies table.'
+                  example: 7
+                  nullable: false
+                smtp_config_id:
+                  type: integer
+                  description: 'The <code>id</code> of an existing record in the s_m_t_p_configs table.'
+                  example: 15
+                  nullable: false
+                email_draft_id:
+                  type: integer
+                  description: 'The <code>id</code> of an existing record in the emails table.'
+                  example: 13
+                  nullable: false
+                emails:
+                  type: array
+                  description: 'Must be a valid email address.'
+                  example:
+                    - lincoln47@example.org
+                  items:
+                    type: string
+                message:
+                  type: string
+                  description: ''
+                  example: facilis
+                  nullable: true
+              required:
+                - company_id
+                - smtp_config_id
+                - email_draft_id
+      security: []
+  /api/v1/emails:
+    get:
+      summary: ''
+      operationId: getApiV1Emails
+      description: ''
+      parameters: []
+      responses:
+        401:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  error: 'Token not valid'
+                properties:
+                  error:
+                    type: string
+                    example: 'Token not valid'
+      tags:
+        - Endpoints
+      security: []
+    post:
+      summary: ''
+      operationId: postApiV1Emails
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Endpoints
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                company_id:
+                  type: string
+                  description: 'The <code>id</code> of an existing record in the companies table.'
+                  example: dolorem
+                  nullable: false
+                subject:
+                  type: string
+                  description: ''
+                  example: doloribus
+                  nullable: false
+                from_email:
+                  type: string
+                  description: 'Must be a valid email address.'
+                  example: cheyanne40@example.com
+                  nullable: false
+                to_email:
+                  type: string
+                  description: 'Must be a valid email address.'
+                  example: cornell25@example.com
+                  nullable: false
+                message:
+                  type: string
+                  description: ''
+                  example: vel
+                  nullable: false
+                other_data:
+                  type: object
+                  description: ''
+                  example: null
+                  nullable: true
+                  properties: {  }
+              required:
+                - company_id
+                - subject
+                - from_email
+                - to_email
+                - message
+      security: []
+  '/api/v1/emails/{id}':
+    put:
+      summary: ''
+      operationId: putApiV1EmailsId
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Endpoints
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                from_email:
+                  type: string
+                  description: 'Must be a valid email address.'
+                  example: schoen.germaine@example.org
+                  nullable: false
+                to_email:
+                  type: string
+                  description: 'Must be a valid email address.'
+                  example: jailyn25@example.org
+                  nullable: false
+                message:
+                  type: string
+                  description: ''
+                  example: aliquid
+                  nullable: false
+                other_data:
+                  type: object
+                  description: ''
+                  example: null
+                  nullable: false
+                  properties: {  }
+      security: []
+    parameters:
+      -
+        in: path
+        name: id
+        description: 'The ID of the email.'
+        example: 1
+        required: true
+        schema:
+          type: integer
+  /api/v1/documents:
+    get:
+      summary: ''
+      operationId: getApiV1Documents
+      description: ''
+      parameters: []
+      responses:
+        401:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  error: 'Token not valid'
+                properties:
+                  error:
+                    type: string
+                    example: 'Token not valid'
+      tags:
+        - Endpoints
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                student_id:
+                  type: string
+                  description: 'This field is required when <code>session_id</code> is not present.'
+                  example: null
+                  nullable: false
+                file_type:
+                  type: string
+                  description: ''
+                  example: null
+                  nullable: true
+                session_id:
+                  type: string
+                  description: 'This field is required when <code>student_id</code> is not present.'
+                  example: null
+                  nullable: false
+      security: []
+    post:
+      summary: ''
+      operationId: postApiV1Documents
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Endpoints
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                student_id:
+                  type: string
+                  description: 'This field is required when <code>session_id</code> is not present.'
+                  example: null
+                  nullable: false
+                session_id:
+                  type: string
+                  description: ''
+                  example: null
+                  nullable: true
+                file_type:
+                  type: string
+                  description: ''
+                  example: qualification
+                  nullable: false
+                  enum:
+                    - proof_of_address
+                    - visa
+                    - passport
+                    - bank_statement
+                    - qualification
+                    - cv
+                    - work_experience
+                    - profile
+                files:
+                  type: array
+                  description: 'Must be a file. Must not be greater than 102400 kilobytes.'
+                  items:
+                    type: string
+                    format: binary
+                base64_files:
+                  type: object
+                  description: 'This field is required when <code>files</code> is not present.'
+                  example: null
+                  nullable: false
+                  properties: {  }
+              required:
+                - file_type
+      security: []
+  '/api/v1/documents/download/{file_id}':
+    get:
+      summary: ''
+      operationId: getApiV1DocumentsDownloadFile_id
+      description: ''
+      parameters: []
+      responses:
+        404:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'No query results for model [App\Models\File] 13'
+                properties:
+                  message:
+                    type: string
+                    example: 'No query results for model [App\Models\File] 13'
+      tags:
+        - Endpoints
+      security: []
+    parameters:
+      -
+        in: path
+        name: file_id
+        description: 'The ID of the file.'
+        example: 13
+        required: true
+        schema:
+          type: integer
+  '/api/v1/documents/{file_id}':
+    delete:
+      summary: ''
+      operationId: deleteApiV1DocumentsFile_id
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Endpoints
+      security: []
+    parameters:
+      -
+        in: path
+        name: file_id
+        description: 'The ID of the file.'
+        example: 18
+        required: true
+        schema:
+          type: integer
+tags:
+  -
+    name: Endpoints
+    description: ''

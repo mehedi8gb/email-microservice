@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreEmailRequest;
 use App\Http\Requests\UpdateEmailRequest;
 use App\Models\Email;
-
 use App\Jobs\SendEmailJob;
 use App\Models\SmtpConfig;
 use Exception;
@@ -47,6 +46,7 @@ class EmailController extends Controller
             'email_draft_id' => 'required|integer|exists:emails,id',
             'emails'          => 'required|array',
             'emails.*'        => 'email',
+            'message'        => 'nullable|string',
         ]);
 
         // Fetch the SMTP configuration based on smtp_config_id
@@ -70,7 +70,7 @@ class EmailController extends Controller
                     $smtpConfig,
                     $toEmail,
                     $emailDraft->subject,
-                    $emailDraft->message
+                    $request->message ?? $emailDraft->message
                     ));
             } catch (Exception $e) {
                 // Log the failure if required
