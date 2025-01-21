@@ -2,7 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Company;
+use App\Models\Email;
+use App\Models\SMTPConfig;
 use Illuminate\Database\Seeder;
 
 class EmailSeeder extends Seeder
@@ -12,6 +14,8 @@ class EmailSeeder extends Seeder
      */
     public function run(): void
     {
-        //
+        Company::factory()->count(1)->create();
+        Email::factory()->count(1)->create();
+        SmtpConfig::factory()->count(1)->create();
     }
 }

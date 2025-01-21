@@ -14,8 +14,8 @@ class UpdateCompanyRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'sometimes|string|max:255',
-            'email' => 'sometimes|email|unique:companies,email,' . $this->company->id,
+            'name' => 'nullable|string|max:255',
+            'email' => 'nullable|email|unique:companies,email,' . $this->company->id,
         ];
     }
 }

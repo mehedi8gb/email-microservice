@@ -6,14 +6,12 @@ use App\Http\Requests\StoreCompanyRequest;
 use App\Http\Requests\UpdateCompanyRequest;
 use App\Http\Resources\CompanyResource;
 use App\Models\Company;
-use App\Models\Model;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 
 class CompanyController extends Controller
 {
 
-    public function index()
+    public function index(): array|JsonResponse
     {
         $query = Company::query();
 
@@ -36,22 +34,24 @@ class CompanyController extends Controller
         }
     }
 
-    public function store(StoreCompanyRequest $request): Builder|Model
+    public function store(StoreCompanyRequest $request): JsonResponse
     {
-        return Company::create($request->validated());
+        $company = Company::create($request->validated());
+
+        return sendSuccessResponse('Company created', CompanyResource::make($company), 201);
     }
 
-    public function update(UpdateCompanyRequest $request, Company $company)
+    public function update(UpdateCompanyRequest $request, Company $company): JsonResponse
     {
         $company->update($request->validated());
-        return $company;
+
+        return sendSuccessResponse('Company updated', CompanyResource::make($company));
     }
 
 
-    public function destroy(Company $company)
+    public function destroy(Company $company): JsonResponse
     {
         $company->delete();
-        return response()->json(['message' => 'Company deleted']);
+        return sendErrorResponse('Company deleted', 204);
     }
 }
-

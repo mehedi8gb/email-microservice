@@ -14,6 +14,8 @@ class StoreEmailRequest extends FormRequest
     public function rules()
     {
         return [
+            'company_id' => 'required|exists:companies,id',
+            'subject' => 'required|string',
             'from_email' => 'required|email',
             'to_email' => 'required|email',
             'message' => 'required|string',

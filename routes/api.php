@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\EmailController;
+use App\Http\Controllers\FileController;
 use App\Http\Controllers\SMTPController;
 use App\Http\Middleware\JwtMiddleware;
 use App\Http\Middleware\RefreshTokenMiddleware;
@@ -24,29 +25,31 @@ Route::group(['prefix' => 'v1'], function () {
         Route::post('logout', [AuthController::class, 'logout'])->middleware([JwtMiddleware::class]);
     });
 
-    Route::middleware([JwtMiddleware::class])->group(function () {
+    Route::middleware([JwtMiddleware::class, 'role:admin'])->group(function () {
         Route::get('me', [AuthController::class, 'me']);
 
-        // Company Routes
-        Route::post('/companies', [CompanyController::class, 'store']);
-        Route::get('/companies', [CompanyController::class, 'index']);
-        Route::get('/companies/{company}', [CompanyController::class, 'show']);
-        Route::put('/companies/{company}', [CompanyController::class, 'update']);
-        Route::delete('/companies/{company}', [CompanyController::class, 'destroy']);
-
         // SMTP Routes
-        Route::post('/companies/{company}/smtp', [SMTPController::class, 'store']);
-        Route::get('/companies/{company}/smtp', [SMTPController::class, 'show']);
+        Route::apiResource('smtp', SMTPController::class)->only(['store', 'update', 'show']);
+
+        // Company Routes
+        Route::apiResource('/companies', CompanyController::class);
 
         // Email Routes
-        Route::post('/companies/{company}/send-email', [EmailController::class, 'send']);
-        Route::get('/companies/{company}/emails', [EmailController::class, 'index']);
-        Route::get('/emails/{id}', [EmailController::class, 'show']);
+        Route::post('/send-email', [EmailController::class, 'sendEmail']);
+        Route::apiResource('emails',EmailController::class)->only([
+            'store', 'index', 'update'
+        ]);
 
-        // File System Routes
-//    Route::post('/companies/{id}/files', [FileController::class, 'upload']);
-//    Route::get('/companies/{id}/files', [FileController::class, 'index']);
-//    Route::delete('/files/{id}', [FileController::class, 'destroy']);
+        // Documents Routes
+        Route::prefix('documents')->group(function () {
+            Route::get('/', [FileController::class, 'index']);
+            Route::post('/', [FileController::class, 'store']);
+            Route::get('download/{file}', [FileController::class, 'download'])
+                ->name('file.download')
+                ->middleware('signed') // Ensure signed middleware is applied
+                ->withoutMiddleware('role:student'); // Exclude the role middleware for this route
+            Route::delete('{file}', [FileController::class, 'destroy']);
+        });
     });
 });
 

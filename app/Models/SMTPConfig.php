@@ -11,6 +11,8 @@ class SMTPConfig extends Model
 
     protected $fillable = [
         'company_id',
+        'from_email',
+        'from_name',
         'host',
         'port',
         'username',

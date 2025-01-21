@@ -13,7 +13,7 @@ class Company extends Model
     protected $fillable = ['name', 'email'];
     protected $casts = [
         'name' => 'encrypted',
-        'email' => 'encrypted',
+//        'email' => 'encrypted',
     ];
 
     public function smtpConfig(): HasOne

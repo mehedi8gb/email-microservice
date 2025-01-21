@@ -14,6 +14,7 @@ class StoreSMTPRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'company_id' => 'required|integer|exists:companies,id',
             'host' => 'required|string',
             'port' => 'required|integer',
             'username' => 'required|string',

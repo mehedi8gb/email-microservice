@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('emails', function (Blueprint $table) {
             $table->id();
             $table->foreignId('company_id')->constrained()->onDelete('cascade');
+            $table->binary('subject');
             $table->binary('from_email');
             $table->binary('to_email');
             $table->binary('message');

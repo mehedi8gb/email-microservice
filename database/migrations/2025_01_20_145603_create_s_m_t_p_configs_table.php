@@ -19,6 +19,9 @@ return new class extends Migration
             $table->binary('username');
             $table->binary('password');
             $table->binary('encryption');
+            $table->string('from_email');
+            $table->string('from_name');
+            $table->softDeletes();
             $table->timestamps();
         });
     }
