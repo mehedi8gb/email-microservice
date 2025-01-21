@@ -1,6 +1,6 @@
-# Apex365 Backend API
+# Email Microservice Backend API
 
-This is the backend API for the Apex365 project built with Laravel 11, providing features like authentication, role-based access, and various resource management systems for handling institutions, courses, academic years, and more.
+This is the backend API for the Email Microservice project built with Laravel 11, providing features like authentication, role-based access, and various resource management systems for handling institutions, courses, academic years, and more.
 
 ## Prerequisites
 
@@ -20,8 +20,8 @@ Before getting started, ensure you have the following installed on your machine:
 Clone the project repository to your local machine.
 
 ```bash
-git clone https://github.com/mehedi8gb/apex365.git
-cd apex365
+git clone https://github.com/mehedi8gb/email-microservice.git
+cd email-microservice
 ```
 
 ### 2. Install Dependencies
@@ -54,7 +54,7 @@ Then, configure the database, mail, and JWT settings in the `.env` file:
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
-DB_DATABASE=Apex365_db
+DB_DATABASE=email_microservice_db
 DB_USERNAME=root
 DB_PASSWORD=
 
@@ -117,4 +117,8 @@ Run tests using PHPUnit:
 ```bash
 php artisan test
 ```
-# apex365
+### 9. Api Docs
+
+You can find the API documentation in the `public/docs` directory. You can access the documentation by visiting `http://localhost/docs
+
+# Email-Microservice
