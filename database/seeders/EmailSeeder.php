@@ -3,8 +3,9 @@
 namespace Database\Seeders;
 
 use App\Models\Company;
-use App\Models\Email;
-use App\Models\SMTPConfig;
+use Database\Factories\CompanyFactory;
+use Database\Factories\EmailFactory;
+use Database\Factories\SmtpConfigFactory;
 use Illuminate\Database\Seeder;
 
 class EmailSeeder extends Seeder
@@ -14,10 +15,10 @@ class EmailSeeder extends Seeder
      */
     public function run(): void
     {
-        Company::factory()->count(1)->create();
-        Email::factory()->count(1)->create();
-        SmtpConfig::factory()->count(1)->create();
-        SMTPConfig::factory()->create([
+        CompanyFactory::times(1)->create();
+        EmailFactory::times(1)->create();
+        SmtpConfigFactory::times(1)->create();
+        SMTPConfigFactory::times(1)->create([
             'company_id' => Company::first()->id,
             'host' => "mail.jumpintojob.com",
             'port' => 465,
