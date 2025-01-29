@@ -5,19 +5,19 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreSMTPRequest;
 use App\Http\Requests\UpdateSMTPRequest;
 use App\Http\Resources\SmtpResource;
-use App\Models\SMTPConfig;
+use App\Models\SmtpConfig;
 use Illuminate\Http\JsonResponse;
 
 class SMTPController extends Controller
 {
     public function store(StoreSMTPRequest $request): JsonResponse
     {
-        $smtp = SMTPConfig::create($request->validated());
+        $smtp = SmtpConfig::create($request->validated());
 
         return sendSuccessResponse('SMTP Config created', SmtpResource::make($smtp), 201);
     }
 
-    public function update(UpdateSMTPRequest $request, SMTPConfig $smtp): JsonResponse
+    public function update(UpdateSMTPRequest $request, SmtpConfig $smtp): JsonResponse
     {
         $smtp->update($request->validated());
 
@@ -27,7 +27,7 @@ class SMTPController extends Controller
 
     public function show($company_id): JsonResponse
     {
-        $smtp = SMTPConfig::where('company_id', $company_id)->firstOrFail();
+        $smtp = SmtpConfig::where('company_id', $company_id)->firstOrFail();
         return sendSuccessResponse('SMTP Config retrieved', SmtpResource::make($smtp));
     }
 }

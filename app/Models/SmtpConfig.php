@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class SMTPConfig extends Model
+class SmtpConfig extends Model
 {
     use HasFactory;
 

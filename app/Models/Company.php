@@ -18,7 +18,7 @@ class Company extends Model
 
     public function smtpConfig(): HasOne
     {
-        return $this->hasOne(SMTPConfig::class);
+        return $this->hasOne(SmtpConfig::class);
     }
 
     public function emails(): HasMany
