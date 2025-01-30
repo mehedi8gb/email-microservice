@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\SendEmailRequest;
 use App\Http\Requests\StoreEmailRequest;
 use App\Http\Requests\UpdateEmailRequest;
 use App\Models\Email;
@@ -9,7 +10,6 @@ use App\Jobs\SendEmailJob;
 use App\Models\SmtpConfig;
 use Exception;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
 class EmailController extends Controller
@@ -31,23 +31,16 @@ class EmailController extends Controller
         return sendSuccessResponse('Email created', $email, 201);
     }
 
-    public function update(UpdateEmailRequest $request, Email $email)
+    public function update(UpdateEmailRequest $request, Email $email): Email
     {
         $email->update($request->validated());
         return $email;
     }
 
-    public function sendEmail(Request $request): JsonResponse
+    public function sendEmail(SendEmailRequest $request): JsonResponse
     {
         // Validate the incoming payload
-        $validated = $request->validate([
-            'company_id'     => 'required|integer|exists:companies,id',
-            'smtp_config_id' => 'required|integer|exists:s_m_t_p_configs,id',
-            'email_draft_id' => 'required|integer|exists:emails,id',
-            'emails'          => 'required|array',
-            'emails.*'        => 'email',
-            'message'        => 'nullable|string',
-        ]);
+        $validated = $request->validated();
 
         // Fetch the SMTP configuration based on smtp_config_id
         $smtpConfig = SmtpConfig::find($validated['smtp_config_id']);
@@ -69,7 +62,7 @@ class EmailController extends Controller
                     $validated['company_id'],
                     $smtpConfig,
                     $toEmail,
-                    $emailDraft->subject,
+                    $request->subject ?? $emailDraft->subject,
                     $request->message ?? $emailDraft->message
                     ));
             } catch (Exception $e) {

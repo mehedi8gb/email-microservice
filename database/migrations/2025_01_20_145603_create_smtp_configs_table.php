@@ -31,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('s_m_t_p_configs');
+        Schema::dropIfExists('smtp_configs');
     }
 };
