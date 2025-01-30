@@ -7,6 +7,7 @@ use App\Http\Requests\StoreEmailRequest;
 use App\Http\Requests\UpdateEmailRequest;
 use App\Models\Email;
 use App\Jobs\SendEmailJob;
+use App\Models\EmailLog;
 use App\Models\SmtpConfig;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -14,15 +15,49 @@ use Illuminate\Support\Facades\Log;
 
 class EmailController extends Controller
 {
-    public function index(): array
+    public function index(): JsonResponse
     {
         request()->validate([
             'company_id' => 'required|integer|exists:companies,id',
         ]);
         $emails = Email::query();
         $emails->where('company_id', request('company_id'));
+        try {
+            $results = handleApiRequest(request(), $emails);
 
-        return handleApiRequest(request(), $emails);
+            // Convert $results to a collection if it's an array
+            $results = collect($results);
+            if ($results->isEmpty()) {
+                return sendErrorResponse('No records found', 404);
+            }
+
+            return sendSuccessResponse('Records retrieved successfully', $results);
+        } catch (\Exception $e) {
+            return sendErrorResponse($e);
+        }
+    }
+
+    public function emailLogs(): JsonResponse
+    {
+        request()->validate([
+            'company_id' => 'required|integer|exists:companies,id',
+        ]);
+        $emails = EmailLog::query();
+        $emails->where('company_id', request('company_id'));
+
+        try {
+            $results = handleApiRequest(request(), $emails);
+
+            // Convert $results to a collection if it's an array
+            $results = collect($results);
+            if ($results->isEmpty()) {
+                return sendErrorResponse('No records found', 404);
+            }
+
+            return sendSuccessResponse('Records retrieved successfully', $results);
+        } catch (\Exception $e) {
+            return sendErrorResponse($e);
+        }
     }
 
     public function store(StoreEmailRequest $request): JsonResponse

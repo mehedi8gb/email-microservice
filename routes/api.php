@@ -36,6 +36,7 @@ Route::group(['prefix' => 'v1'], function () {
 
         // Email Routes
         Route::post('/send-email', [EmailController::class, 'sendEmail']);
+        Route::get('/email-logs', [EmailController::class, 'emailLogs']);
         Route::apiResource('emails',EmailController::class)->only([
             'store', 'index', 'update'
         ]);
