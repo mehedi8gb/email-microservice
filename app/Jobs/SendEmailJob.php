@@ -63,6 +63,7 @@ class SendEmailJob implements ShouldQueue
                 'company_id' => $this->companyId,
                 'from_email' => $this->smtpConfig->from_email,  // Assuming the 'username' as the sender
                 'to_email'   => $this->toEmail,
+                'subject'    => $this->subject,
                 'message'    => $this->message,
                 'status'     => 'sent',
             ]);
@@ -72,6 +73,7 @@ class SendEmailJob implements ShouldQueue
                 'company_id' => $this->companyId,
                 'from_email' => $this->smtpConfig->from_email,
                 'to_email'   => $this->toEmail,
+                'subject'    => $this->subject,
                 'message'    => $this->message,
                 'status'     => 'failed',
                 'error'      => $e->getMessage()

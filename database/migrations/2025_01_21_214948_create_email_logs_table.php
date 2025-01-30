@@ -16,6 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('company_id');
             $table->string('from_email');
             $table->string('to_email');
+            $table->string('subject');
             $table->text('message');
             $table->json('other_data')->nullable();
             $table->enum('status', ['sent', 'failed']);
