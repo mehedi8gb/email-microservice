@@ -20,7 +20,7 @@ return new class extends Migration
             $table->binary('password');
             $table->binary('encryption');
             $table->string('from_email');
-            $table->string('from_name');
+            $table->string('from_name')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });
