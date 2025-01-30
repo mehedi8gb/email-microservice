@@ -29,7 +29,7 @@ Route::group(['prefix' => 'v1'], function () {
         Route::get('me', [AuthController::class, 'me']);
 
         // SMTP Routes
-        Route::apiResource('smtp', SMTPController::class)->only(['store', 'update', 'show']);
+        Route::apiResource('smtp', SMTPController::class)->only(['store', 'update', 'show', 'index']);
 
         // Company Routes
         Route::apiResource('/companies', CompanyController::class);
@@ -41,14 +41,14 @@ Route::group(['prefix' => 'v1'], function () {
         ]);
 
         // Documents Routes
-        Route::prefix('documents')->group(function () {
-            Route::get('/', [FileController::class, 'index']);
-            Route::post('/', [FileController::class, 'store']);
-            Route::get('download/{file}', [FileController::class, 'download'])
-                ->name('file.download')
-                ->middleware('signed') // Ensure signed middleware is applied
-                ->withoutMiddleware('role:student'); // Exclude the role middleware for this route
-            Route::delete('{file}', [FileController::class, 'destroy']);
-        });
+//        Route::prefix('documents')->group(function () {
+//            Route::get('/', [FileController::class, 'index']);
+//            Route::post('/', [FileController::class, 'store']);
+//            Route::get('download/{file}', [FileController::class, 'download'])
+//                ->name('file.download')
+//                ->middleware('signed') // Ensure signed middleware is applied
+//                ->withoutMiddleware('role:student'); // Exclude the role middleware for this route
+//            Route::delete('{file}', [FileController::class, 'destroy']);
+//        });
     });
 });

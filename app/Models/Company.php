@@ -16,9 +16,9 @@ class Company extends Model
 //        'email' => 'encrypted',
     ];
 
-    public function smtpConfig(): HasOne
+    public function smtpConfigs(): HasMany
     {
-        return $this->hasOne(SmtpConfig::class);
+        return $this->hasMany(SmtpConfig::class);
     }
 
     public function emails(): HasMany

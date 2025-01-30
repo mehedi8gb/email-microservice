@@ -16,6 +16,8 @@ class UpdateSMTPRequest extends FormRequest
         return [
             'host' => 'sometimes|string',
             'port' => 'sometimes|integer',
+            'from_email' => 'sometimes|email',
+            'from_name' => 'sometimes|string',
             'username' => 'sometimes|string',
             'password' => 'sometimes|string',
             'encryption' => 'sometimes|string|in:ssl,tls',

@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreSMTPRequest;
 use App\Http\Requests\UpdateSMTPRequest;
 use App\Http\Resources\SmtpResource;
+use App\Models\Company;
 use App\Models\SmtpConfig;
+use Egulias\EmailValidator\Parser\Comment;
 use Illuminate\Http\JsonResponse;
 
 class SMTPController extends Controller
@@ -27,8 +29,37 @@ class SMTPController extends Controller
 
     public function show($company_id): JsonResponse
     {
-        $smtp = SmtpConfig::where('company_id', $company_id)->firstOrFail();
-        return sendSuccessResponse('SMTP Config retrieved', SmtpResource::make($smtp));
+        $company = Company::with('smtpConfigs')->find($company_id);
+
+        if (!$company) {
+            return sendErrorResponse('Company not found', 404);
+        }
+
+        return sendSuccessResponse('SMTP Config retrieved', SmtpResource::collection($company->smtpConfigs));
+    }
+
+    public function index(): JsonResponse
+    {
+        request()->validate([
+            'company_id' => 'required|integer|exists:companies,id',
+        ]);
+
+        $query = SmtpConfig::query();
+        $query->where('company_id', request()->company_id);
+
+        try {
+            $results = handleApiRequest(request(), $query);
+
+            // Convert $results to a collection if it's an array
+            $results = collect($results);
+            if ($results->isEmpty()) {
+                return sendErrorResponse('No records found', 404);
+            }
+
+            return sendSuccessResponse('Records retrieved successfully', $results);
+        } catch (\Exception $e) {
+            return sendErrorResponse($e);
+        }
     }
 }
 
