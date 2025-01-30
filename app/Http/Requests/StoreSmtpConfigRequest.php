@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreSMTPRequest extends FormRequest
+class StoreSmtpConfigRequest extends FormRequest
 {
     public function authorize(): true
     {

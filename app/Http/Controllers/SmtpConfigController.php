@@ -2,28 +2,28 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreSMTPRequest;
-use App\Http\Requests\UpdateSMTPRequest;
-use App\Http\Resources\SmtpResource;
+use App\Http\Requests\StoreSmtpConfigRequest;
+use App\Http\Requests\UpdateSmtpConfigRequest;
+use App\Http\Resources\SmtpConfigResource;
 use App\Models\Company;
 use App\Models\SmtpConfig;
 use Egulias\EmailValidator\Parser\Comment;
 use Illuminate\Http\JsonResponse;
 
-class SMTPController extends Controller
+class SmtpConfigController extends Controller
 {
-    public function store(StoreSMTPRequest $request): JsonResponse
+    public function store(StoreSmtpConfigRequest $request): JsonResponse
     {
         $smtp = SmtpConfig::create($request->validated());
 
-        return sendSuccessResponse('SMTP Config created', SmtpResource::make($smtp), 201);
+        return sendSuccessResponse('SMTP Config created', SmtpConfigResource::make($smtp), 201);
     }
 
-    public function update(UpdateSMTPRequest $request, SmtpConfig $smtp): JsonResponse
+    public function update(UpdateSmtpConfigRequest $request, SmtpConfig $smtp): JsonResponse
     {
         $smtp->update($request->validated());
 
-        return sendSuccessResponse('SMTP Config updated', SmtpResource::make($smtp));
+        return sendSuccessResponse('SMTP Config updated', SmtpConfigResource::make($smtp));
     }
 
 
@@ -35,7 +35,7 @@ class SMTPController extends Controller
             return sendErrorResponse('Company not found', 404);
         }
 
-        return sendSuccessResponse('SMTP Config retrieved', SmtpResource::collection($company->smtpConfigs));
+        return sendSuccessResponse('SMTP Config retrieved', SmtpConfigResource::collection($company->smtpConfigs));
     }
 
     public function index(): JsonResponse

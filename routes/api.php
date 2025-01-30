@@ -3,7 +3,7 @@
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\EmailController;
 use App\Http\Controllers\FileController;
-use App\Http\Controllers\SMTPController;
+use App\Http\Controllers\SmtpConfigController;
 use App\Http\Middleware\JwtMiddleware;
 use App\Http\Middleware\RefreshTokenMiddleware;
 use Illuminate\Support\Facades\Route;
@@ -29,7 +29,7 @@ Route::group(['prefix' => 'v1'], function () {
         Route::get('me', [AuthController::class, 'me']);
 
         // SMTP Routes
-        Route::apiResource('smtp', SMTPController::class)->only(['store', 'update', 'show', 'index']);
+        Route::apiResource('smtp', SmtpConfigController::class)->only(['store', 'update', 'show', 'index']);
 
         // Company Routes
         Route::apiResource('/companies', CompanyController::class);

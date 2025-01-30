@@ -28,6 +28,10 @@ class SmtpConfig extends Model
         'from_email' => 'encrypted',
         'from_name' => 'encrypted',
     ];
+
+    protected $hidden = [
+        'password',
+    ];
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
