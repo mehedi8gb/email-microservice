@@ -16,7 +16,7 @@ class EmailLogResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'company_id' => $this->company_id,
+            'company' => CompanyResource::make($this->whenLoaded('company')),
             'from_email' => $this->from_email,
             'to_email' => $this->to_email,
             'message' => $this->message,
