@@ -1,6 +1,8 @@
 <?php
 
 namespace App\Models;
+use Exception;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model as MainModel;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Carbon;
@@ -30,6 +32,7 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Model get()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Model first()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Model findOrFail($id)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Model firstOrFail()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Model updateOrCreate($attributes, $values = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Model find($id)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Model exists()
@@ -44,14 +47,21 @@ use Illuminate\Support\Carbon;
 
 class Model extends MainModel
 {
-    public static function findOrCustomFail($id): \Illuminate\Database\Eloquent\Builder|\Illuminate\Http\JsonResponse|Model
+
+    /**
+     * @throws Exception
+     */
+    public static function findOrCustomFail($id, $message = 'not found'): null|Model|Builder|ModelNotFoundException
     {
         try {
-            return self::findOrFail($id);
+            if (!$id) return null;
+
+            return static::findOrFail($id);
         } catch (ModelNotFoundException $e) {
-            // Handle the exception
-            // For example, return a custom response
-            return sendErrorResponse($e, 404);
+            $modelName = class_basename(static::class);
+            $customMessage = "{$modelName} {$message}";
+
+            throw new ModelNotFoundException($customMessage, 404);
         }
     }
 }

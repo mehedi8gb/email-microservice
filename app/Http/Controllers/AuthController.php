@@ -31,29 +31,13 @@ class AuthController extends Controller
             'email' => 'nullable|email:rfc,dns|unique:users,email|required_without:phone',
             'phone' => 'nullable|string|unique:users,phone|max:15|required_without:email',
             'password' => 'required|string|min:6',
-            'referralId' => 'required|string',
         ]);
-
-        $referral = Referral::where('referralId', $validated['referralId']);
-
-        if (!$referral->exists()) {
-            return sendErrorResponse('Referral ID not found', 404);
-        }
-
-        if (!$this->validatePhone($validated['phone'])) {
-            return sendErrorResponse('Invalid phone number', 422);
-        }
 
         $user = User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
+            'name' => $validated['name'] ?? null,
+            'email' => $validated['email'] ?? null,
             'phone' => self::$phone,
             'password' => Hash::make($validated['password']),
-        ]);
-
-        ReferralUser::create([
-            'referralId' => $referral->first()->id,
-            'user_id' => $user->id,
         ]);
 
         // Assign the role to the user

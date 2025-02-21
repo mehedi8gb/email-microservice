@@ -15,8 +15,6 @@ return new class extends Migration
             $table->id();
             $table->foreignId('company_id')->constrained()->onDelete('cascade');
             $table->binary('subject');
-            $table->binary('from_email');
-            $table->binary('to_email');
             $table->binary('message');
             $table->binary('other_data')->nullable();
             $table->timestamps();

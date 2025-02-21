@@ -29,7 +29,7 @@ Route::group(['prefix' => 'v1'], function () {
         Route::get('me', [AuthController::class, 'me']);
 
         // SMTP Routes
-        Route::apiResource('smtp', SmtpConfigController::class)->only(['store', 'update', 'show', 'index']);
+        Route::apiResource('smtp', SmtpConfigController::class);
 
         // Company Routes
         Route::apiResource('/companies', CompanyController::class);
