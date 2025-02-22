@@ -19,6 +19,8 @@ class SmtpConfigResource extends JsonResource
 //            'company' => CompanyResource::make($this->company),
             'host' => $this->host,
             'port' => $this->port,
+            'from_email' => $this->from_email,
+            'from_name' => $this->from_name,
             'username' => $this->username,
             'encryption' => $this->encryption,
             'created_at' => $this->created_at->toDateTimeString(),

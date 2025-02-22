@@ -6,18 +6,16 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class StoreEmailRequest extends FormRequest
 {
-    public function authorize()
+    public function authorize(): true
     {
         return true;
     }
 
-    public function rules()
+    public function rules(): array
     {
         return [
             'company_id' => 'required|exists:companies,id',
             'subject' => 'required|string',
-            'from_email' => 'required|email',
-            'to_email' => 'required|email',
             'message' => 'required|string',
             'other_data' => 'nullable|array',
         ];

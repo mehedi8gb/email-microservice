@@ -18,8 +18,6 @@ class EmailResource extends JsonResource
             'id'         => $this->id,
 //            'company'    => CompanyResource::make($this->company),
             'subject'    => $this->subject,
-            'from_email' => $this->from_email,
-            'to_email'   => $this->to_email,
             'message'    => $this->message,
 //            'other_data' => $this->other_data,
             'created_at' => $this->created_at->toDateTimeString(),
