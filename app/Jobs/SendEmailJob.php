@@ -16,22 +16,25 @@ class SendEmailJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected $companyId;
+    protected int $companyId;
     protected $smtpConfig;
-    protected $toEmail;
-    protected $message;
-    protected $subject;
+    protected string $toEmail;
+    protected string $message;
+    protected string $subject;
+    protected EmailLog $log;
 
     /**
      * Create a new job instance.
      */
-    public function __construct($companyId, $smtpConfig, $toEmail, $subject, $message)
+    public function __construct($companyId, $smtpConfig, $toEmail, $subject, $message, $log)
     {
         $this->companyId = $companyId;
         $this->smtpConfig = $smtpConfig;
         $this->toEmail = $toEmail;
         $this->message = $message;
         $this->subject = $subject;
+        $this->log = $log;
+        $this->log->refresh();
     }
 
     /**
@@ -42,12 +45,12 @@ class SendEmailJob implements ShouldQueue
         try {
             // Dynamically set mail config using the SMTP configuration
             Config::set('mail.mailers.smtp', [
-                'transport'  => 'smtp',
-                'host'       => $this->smtpConfig->host,
-                'port'       => $this->smtpConfig->port,
+                'transport' => 'smtp',
+                'host' => $this->smtpConfig->host,
+                'port' => $this->smtpConfig->port,
                 'encryption' => $this->smtpConfig->encryption,
-                'username'   => $this->smtpConfig->username,
-                'password'   => $this->smtpConfig->password,
+                'username' => $this->smtpConfig->username,
+                'password' => $this->smtpConfig->password,
             ]);
             Config::set('mail.default', 'smtp');
 
@@ -59,24 +62,14 @@ class SendEmailJob implements ShouldQueue
             });
 
             // Log the email in the database
-            EmailLog::create([
-                'company_id' => $this->companyId,
-                'from_email' => $this->smtpConfig->from_email,  // Assuming the 'username' as the sender
-                'to_email'   => $this->toEmail,
-                'subject'    => $this->subject,
-                'message'    => $this->message,
-                'status'     => 'sent',
+            $this->log->update([
+                'status' => 'sent',
             ]);
         } catch (Exception $e) {
             // Log failure in database
-            EmailLog::create([
-                'company_id' => $this->companyId,
-                'from_email' => $this->smtpConfig->from_email,
-                'to_email'   => $this->toEmail,
-                'subject'    => $this->subject,
-                'message'    => $this->message,
-                'status'     => 'failed',
-                'error'      => $e->getMessage()
+            $this->log->update([
+                'status' => 'failed',
+                'error' => $e->getMessage()
             ]);
         }
     }

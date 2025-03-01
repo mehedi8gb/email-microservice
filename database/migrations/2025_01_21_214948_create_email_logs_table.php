@@ -14,12 +14,13 @@ return new class extends Migration
         Schema::create('email_logs', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('company_id');
-            $table->string('from_email');
-            $table->string('to_email');
+            $table->unsignedBigInteger('smtp_config_id');
+            $table->unsignedBigInteger('email_draft_id')->nullable();
+            $table->string('to');
             $table->string('subject');
             $table->text('message');
             $table->json('other_data')->nullable();
-            $table->enum('status', ['sent', 'failed']);
+            $table->enum('status', ['sent', 'failed', 'pending'])->default('pending');
             $table->text('error')->nullable();
             $table->timestamps();
 

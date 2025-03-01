@@ -83,27 +83,58 @@ class EmailController extends Controller
             return response()->json(['error' => 'SMTP configuration not found.'], 400);
         }
 
+        $emailDraft = null;
         // Fetch the email draft based on email_draft_id
-        $emailDraft = Email::find($validated['email_draft_id']);
-        if (!$emailDraft) {
+        if (isset($validated['email_draft_id'])) {
+            $emailDraft = Email::find($validated['email_draft_id']);
+        }
+        if (!$emailDraft && isset($validated['email_draft_id'])) {
             return response()->json(['error' => 'Email draft not found.'], 400);
         }
+
+        if (!$emailDraft) {
+            $emailDraft = [
+                'id' => null,
+                'subject' => request()->subject,
+                'body' => request()->message
+            ];
+        }
+
 
         // Loop through the emails and dispatch jobs
         foreach ($validated['emails'] as $toEmail) {
             try {
+                $log = EmailLog::create([
+                    'company_id' => $validated['company_id'],
+                    'smtp_config_id' => $validated['smtp_config_id'],
+                    'email_draft_id' => $emailDraft['id'],
+                    'to' => $toEmail,
+                    'subject' => $emailDraft['subject'],
+                    'message' => $emailDraft['body'],
+                    'status' => 'pending',
+                    'created_at' => now(),
+                ]);
                 // Dispatch the job for each recipient
                 dispatch(new SendEmailJob(
                     $validated['company_id'],
                     $smtpConfig,
                     $toEmail,
                     $request->subject ?? $emailDraft->subject,
-                    $request->message ?? $emailDraft->message
-                    ));
+                    $request->message ?? $emailDraft->message,
+                    $log
+                ));
             } catch (Exception $e) {
                 // Log the failure if required
-                Log::error("Failed to dispatch email job for {$toEmail}: {$e->getMessage()}");
-                return response()->json(['error' => 'Failed to dispatch email job.'], 500);
+                EmailLog::create([
+                    'company_id' => $validated['company_id'],
+                    'smtp_config_id' => $validated['smtp_config_id'],
+                    'email_draft_id' => $emailDraft['id'],
+                    'to' => $toEmail,
+                    'subject' => $emailDraft['subject'],
+                    'message' => $emailDraft['body'],
+                    'status' => 'failed',
+                    'created_at' => now(),
+                ]);
             }
         }
 
