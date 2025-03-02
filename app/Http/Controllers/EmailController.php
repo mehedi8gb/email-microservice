@@ -96,7 +96,7 @@ class EmailController extends Controller
             $emailDraft = [
                 'id' => null,
                 'subject' => request()->subject,
-                'body' => request()->message
+                'message' => request()->message
             ];
         }
 
@@ -110,7 +110,7 @@ class EmailController extends Controller
                     'email_draft_id' => $emailDraft['id'],
                     'to' => $toEmail,
                     'subject' => $emailDraft['subject'],
-                    'message' => $emailDraft['body'],
+                    'message' => $emailDraft['message'],
                     'status' => 'pending',
                     'created_at' => now(),
                 ]);
@@ -131,7 +131,7 @@ class EmailController extends Controller
                     'email_draft_id' => $emailDraft['id'],
                     'to' => $toEmail,
                     'subject' => $emailDraft['subject'],
-                    'message' => $emailDraft['body'],
+                    'message' => $emailDraft['message'],
                     'status' => 'failed',
                     'created_at' => now(),
                 ]);
