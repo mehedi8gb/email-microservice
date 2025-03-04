@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\EmailController;
+use App\Http\Controllers\EmailNotificationController;
+use App\Http\Controllers\EmailTemplateController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\SmtpConfigController;
 use App\Http\Middleware\JwtMiddleware;
@@ -28,6 +30,9 @@ Route::group(['prefix' => 'v1'], function () {
     Route::middleware([JwtMiddleware::class, 'role:admin'])->group(function () {
         Route::get('me', [AuthController::class, 'me']);
 
+        // Email Templates
+        Route::apiResource('templates', EmailTemplateController::class);
+
         // SMTP Routes
         Route::apiResource('smtp', SmtpConfigController::class);
 
@@ -40,6 +45,11 @@ Route::group(['prefix' => 'v1'], function () {
         Route::apiResource('emails',EmailController::class)->only([
             'store', 'index', 'update'
         ]);
+
+        // Email Notification Routes
+        Route::post('/subscribe', [EmailNotificationController::class, 'subscribe']);
+        Route::post('/unsubscribe', [EmailNotificationController::class, 'unsubscribe']);
+        Route::get('/subscribers', [EmailNotificationController::class, 'listSubscribers']);
 
         // Documents Routes
 //        Route::prefix('documents')->group(function () {

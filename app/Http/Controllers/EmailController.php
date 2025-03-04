@@ -8,10 +8,10 @@ use App\Http\Requests\UpdateEmailRequest;
 use App\Models\Email;
 use App\Jobs\SendEmailJob;
 use App\Models\EmailLog;
+use App\Models\EmailTemplate;
 use App\Models\SmtpConfig;
 use Exception;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Log;
 
 class EmailController extends Controller
 {
@@ -77,67 +77,92 @@ class EmailController extends Controller
         // Validate the incoming payload
         $validated = $request->validated();
 
-        // Fetch the SMTP configuration based on smtp_config_id
+        // Fetch SMTP Configuration
         $smtpConfig = SmtpConfig::find($validated['smtp_config_id']);
         if (!$smtpConfig) {
             return response()->json(['error' => 'SMTP configuration not found.'], 400);
         }
 
+        // Fetch Email Draft or Template
         $emailDraft = null;
-        // Fetch the email draft based on email_draft_id
         if (isset($validated['email_draft_id'])) {
             $emailDraft = Email::find($validated['email_draft_id']);
-        }
-        if (!$emailDraft && isset($validated['email_draft_id'])) {
-            return response()->json(['error' => 'Email draft not found.'], 400);
+        } elseif (isset($validated['template_type'])) {
+            $emailDraft = EmailTemplate::where('name', $validated['template_type'])
+                ->where('company_id', $validated['company_id'])
+                ->first();
         }
 
         if (!$emailDraft) {
-            $emailDraft = [
-                'id' => null,
-                'subject' => request()->subject,
-                'message' => request()->message
-            ];
+            return response()->json(['error' => 'No valid email draft or template found.'], 400);
+        }
+
+        // Replace placeholders in template if provided
+        $emailMessage = $emailDraft->body ?? $validated['message'];
+        if (isset($validated['template_type'])) {
+            $template = EmailTemplate::where('name', $validated['template_type'])->first();
+        }
+
+        if (isset($template)) {
+            $emailMessage = str_replace(
+                array_map(fn($key) => "{{" . $key . "}}", array_keys($validated['variables'])),
+                array_values($validated['variables']),
+                $template->body
+            );
         }
 
 
-        // Loop through the emails and dispatch jobs
+        // Dispatch Jobs for Each Email
         foreach ($validated['emails'] as $toEmail) {
             try {
                 $log = EmailLog::create([
                     'company_id' => $validated['company_id'],
                     'smtp_config_id' => $validated['smtp_config_id'],
-                    'email_draft_id' => $emailDraft['id'],
+                    'email_draft_id' => $emailDraft->id ?? null,
                     'to' => $toEmail,
-                    'subject' => $emailDraft['subject'],
-                    'message' => $emailDraft['message'],
+                    'subject' => $emailDraft->subject ?? $validated['subject'],
+                    'message' => $emailMessage,
                     'status' => 'pending',
                     'created_at' => now(),
                 ]);
-                // Dispatch the job for each recipient
+
                 dispatch(new SendEmailJob(
                     $validated['company_id'],
                     $smtpConfig,
                     $toEmail,
-                    $request->subject ?? $emailDraft->subject,
-                    $request->message ?? $emailDraft->message,
+                    $emailDraft->subject ?? $validated['subject'],
+                    $emailMessage,
                     $log
                 ));
             } catch (Exception $e) {
-                // Log the failure if required
                 EmailLog::create([
                     'company_id' => $validated['company_id'],
                     'smtp_config_id' => $validated['smtp_config_id'],
-                    'email_draft_id' => $emailDraft['id'],
+                    'email_draft_id' => $emailDraft->id ?? null,
                     'to' => $toEmail,
-                    'subject' => $emailDraft['subject'],
-                    'message' => $emailDraft['message'],
+                    'subject' => $emailDraft->subject ?? $validated['subject'],
+                    'message' => $emailMessage,
                     'status' => 'failed',
+                    'error' => $e->getMessage(),
                     'created_at' => now(),
                 ]);
             }
         }
 
-        return response()->json(['message' => 'Email job(s) dispatched successfully!']);
+        // Handle Notifications
+        if (isset($validated['notify_users'])) {
+            foreach ($validated['notify_users'] as $notifyEmail) {
+                dispatch(new SendEmailJob(
+                    $validated['company_id'],
+                    $smtpConfig,
+                    $notifyEmail,
+                    "Email Notification",
+                    "An email has been sent to: " . implode(", ", $validated['emails']),
+                    null
+                ));
+            }
+        }
+
+        return sendSuccessResponse('Email job(s) dispatched successfully!');
     }
 }

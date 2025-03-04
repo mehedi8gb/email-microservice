@@ -3,6 +3,9 @@
 namespace App\Jobs;
 
 use App\Models\EmailLog;
+use App\Models\EmailNotification;
+use App\Models\EmailTemplate;
+use App\Notifications\EmailNotificationMessage;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -11,6 +14,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Mail;
 use Exception;
+use Illuminate\Support\Facades\Notification;
 
 class SendEmailJob implements ShouldQueue
 {
@@ -21,7 +25,7 @@ class SendEmailJob implements ShouldQueue
     protected string $toEmail;
     protected string $message;
     protected string $subject;
-    protected EmailLog $log;
+    protected $log;
 
     /**
      * Create a new job instance.
@@ -34,16 +38,12 @@ class SendEmailJob implements ShouldQueue
         $this->message = $message;
         $this->subject = $subject;
         $this->log = $log;
-        $this->log->refresh();
     }
 
-    /**
-     * Execute the job.
-     */
     public function handle(): void
     {
         try {
-            // Dynamically set mail config using the SMTP configuration
+            // Configure SMTP settings dynamically
             Config::set('mail.mailers.smtp', [
                 'transport' => 'smtp',
                 'host' => $this->smtpConfig->host,
@@ -54,24 +54,45 @@ class SendEmailJob implements ShouldQueue
             ]);
             Config::set('mail.default', 'smtp');
 
-            // Send the email
-            Mail::raw($this->message, function ($mail) {
+            Mail::send([], [], function ($mail) {
+                // Determine if the message contains HTML tags
+                $isHtml = $this->isHtml($this->message);
+
                 $mail->to($this->toEmail)
                     ->subject($this->subject)
-                    ->from($this->smtpConfig->from_email);  // or use a 'from' email from the SMTP config
+                    ->from($this->smtpConfig->from_email);
+
+                if ($isHtml) {
+                    // If the message is HTML, set the body as HTML
+                    $mail->html($this->message);
+                } else {
+                    // If the message is plain text, set the body as text
+                    $mail->text($this->message);
+                }
             });
 
-            // Log the email in the database
-            $this->log->update([
-                'status' => 'sent',
-            ]);
+
+
+
+            // Update email log
+            $this->log->update(['status' => 'sent']);
+
+            // Notify all subscribers
+            $subscribers = EmailNotification::where('company_id', $this->companyId)->pluck('email')->toArray();
+
+            Notification::route('mail', $subscribers)->notify(new EmailNotificationMessage($this->toEmail, $this->subject));
+
         } catch (Exception $e) {
-            // Log failure in database
             $this->log->update([
                 'status' => 'failed',
                 'error' => $e->getMessage()
             ]);
         }
+    }
+    private function isHtml(string $message): bool
+    {
+        // Check if the message contains HTML tags
+        return (bool) preg_match('/<[^>]+>/', $message);
     }
 }
 
